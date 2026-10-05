@@ -180,3 +180,32 @@ John,john@gmail.com,35
 
     assert response.status_code == 200
     assert response.json() == []
+
+def test_get_import_statistics():
+    valid_csv = """name,email,age
+John,john@gmail.com,35
+Anna,anna@gmail.com,28
+"""
+
+    invalid_csv = """name,email,age
+John,john@gmail.com,35
+Mike,mike@gmail.com,abc
+"""
+
+    response_1 = upload_file(valid_csv)
+    response_2 = upload_file(invalid_csv)
+
+    assert response_1.status_code == 200
+    assert response_2.status_code == 200
+
+    response = client.get("/imports/statistics")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["total_imports"] >= 2
+    assert data["successful_imports"] >= 1
+    assert data["imports_with_errors"] >= 1
+    assert data["total_processed_rows"] >= 3
+    assert data["total_failed_rows"] >= 1
