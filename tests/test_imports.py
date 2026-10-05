@@ -209,3 +209,38 @@ Mike,mike@gmail.com,abc
     assert data["imports_with_errors"] >= 1
     assert data["total_processed_rows"] >= 3
     assert data["total_failed_rows"] >= 1
+
+
+def test_get_imports_with_errors():
+    valid_csv = """name,email,age
+John,john@gmail.com,35
+"""
+
+    invalid_csv = """name,email,age
+John,john@gmail.com,35
+Mike,mike@gmail.com,abc
+"""
+
+    valid_response = upload_file(valid_csv)
+    invalid_response = upload_file(invalid_csv)
+
+    assert valid_response.status_code == 200
+    assert invalid_response.status_code == 200
+
+    invalid_import_id = invalid_response.json()["id"]
+
+    response = client.get("/imports/with-errors")
+
+    assert response.status_code == 200
+
+    imports = response.json()
+
+    assert any(
+        import_job["id"] == invalid_import_id
+        for import_job in imports
+    )
+
+    assert all(
+        import_job["failed_rows"] > 0
+        for import_job in imports
+    )

@@ -20,3 +20,10 @@ class ImportStatisticsResponse(BaseModel):
     imports_with_errors: int
     total_processed_rows: int
     total_failed_rows: int
+
+class ImportJobListResponse(BaseModel):
+    id: int
+    filename: str
+    status: str
+    processed_rows: int
+    failed_rows: int
