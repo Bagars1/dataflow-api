@@ -12,3 +12,11 @@ class ImportJobResponse(BaseModel):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class ImportStatisticsResponse(BaseModel):
+    total_imports: int
+    successful_imports: int
+    imports_with_errors: int
+    total_processed_rows: int
+    total_failed_rows: int

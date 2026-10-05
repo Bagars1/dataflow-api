@@ -4,10 +4,16 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 from crud.import_error import get_import_errors
-from crud.import_job import create_import_job, get_import_job
+
+from crud.import_job import (
+    create_import_job,
+    get_import_job,
+    get_import_statistics,
+)
+
 from database.database import get_db
 from schemas.import_error import ImportErrorResponse
-from schemas.import_job import ImportJobResponse
+from schemas.import_job import ImportJobResponse, ImportStatisticsResponse
 from services.file_processor import process_import
 
 
@@ -52,6 +58,18 @@ def create_import(
         )
 
     return import_job
+
+
+@router.get(
+    "/statistics",
+    response_model=ImportStatisticsResponse,
+)
+def read_import_statistics(
+    db: Session = Depends(get_db),
+):
+    return get_import_statistics(db)
+
+
 
 
 @router.get(
