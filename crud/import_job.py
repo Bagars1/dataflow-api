@@ -33,7 +33,6 @@ def get_all_import_jobs(
     return db.query(ImportJob).all()
 
 
-
 def get_import_statistics(
     db: Session,
 ):
@@ -62,3 +61,12 @@ def get_import_statistics(
         "total_failed_rows": total_failed_rows,
     }
 
+
+def get_import_jobs_with_errors(
+    db: Session,
+):
+    return (
+        db.query(ImportJob)
+        .filter(ImportJob.failed_rows > 0)
+        .all()
+    )

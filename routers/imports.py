@@ -9,11 +9,19 @@ from crud.import_job import (
     create_import_job,
     get_import_job,
     get_import_statistics,
+    get_all_import_jobs,
+    get_import_jobs_with_errors,
 )
 
 from database.database import get_db
+
 from schemas.import_error import ImportErrorResponse
-from schemas.import_job import ImportJobResponse, ImportStatisticsResponse
+from schemas.import_job import (
+    ImportJobResponse,
+    ImportJobListResponse,
+    ImportStatisticsResponse,
+)
+
 from services.file_processor import process_import
 
 
@@ -61,6 +69,31 @@ def create_import(
 
 
 @router.get(
+    "/",
+    response_model=list[ImportJobListResponse],
+)
+def read_imports(
+    db: Session = Depends(get_db),
+):
+    return get_all_import_jobs(db)
+
+
+
+
+@router.get(
+    "/with-errors",
+    response_model=list[ImportJobListResponse],
+)
+def read_imports_with_errors(
+    db: Session = Depends(get_db),
+):
+    return get_import_jobs_with_errors(db)
+
+
+
+
+
+@router.get(
     "/statistics",
     response_model=ImportStatisticsResponse,
 )
@@ -68,6 +101,7 @@ def read_import_statistics(
     db: Session = Depends(get_db),
 ):
     return get_import_statistics(db)
+
 
 
 
@@ -81,6 +115,9 @@ def read_import_errors(
     db: Session = Depends(get_db),
 ):
     return get_import_errors(db, import_id)
+
+
+
 
 
 @router.get(
